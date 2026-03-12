@@ -1,18 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RecipeManager
-{
-    internal class MealPlan
-    {
-    }
-}
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Forms;
 
 namespace RecipeMealPlanner
