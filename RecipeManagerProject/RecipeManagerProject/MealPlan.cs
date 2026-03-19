@@ -14,12 +14,14 @@ namespace RecipeMealPlanner
         public MealPlan(ListView listView)
         {
             this.listView = listView;
-            LoadSampleRecipes(); // Добавляем примеры рецептов
+            LoadSampleRecipes();
             LoadPlan();
         }
 
         private void LoadPlan()
         {
+            if (listView == null) return;
+
             listView.Items.Clear();
             foreach (var entry in plan)
             {
@@ -52,10 +54,15 @@ namespace RecipeMealPlanner
 
         public void AddRecipeToPlan(DateTime date, Recipe recipe)
         {
+            if (recipe == null) return;
+
             if (plan.ContainsKey(date))
             {
-                MessageBox.Show("На эту дату рецепт уже добавлен.", "Ошибка",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                if (listView != null)
+                {
+                    MessageBox.Show("На эту дату рецепт уже добавлен.", "Ошибка",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
             else
             {
@@ -65,8 +72,12 @@ namespace RecipeMealPlanner
                 }
                 plan.Add(date, recipe);
                 LoadPlan();
-                MessageBox.Show("Рецепт добавлен в план!", "Успех",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                if (listView != null)
+                {
+                    MessageBox.Show("Рецепт добавлен в план!", "Успех",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
         }
 
@@ -76,20 +87,30 @@ namespace RecipeMealPlanner
             {
                 plan.Remove(date);
                 LoadPlan();
-                MessageBox.Show("Рецепт удален из плана.", "Успех",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                if (listView != null)
+                {
+                    MessageBox.Show("Рецепт удален из плана.", "Успех",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
         }
 
         public Recipe SearchRecipeByName(string name)
         {
+            // ИСПРАВЛЕНИЕ: проверка на null
+            if (string.IsNullOrEmpty(name))
+            {
+                return null;
+            }
+
             return allRecipes.FirstOrDefault(r =>
                 r.Name.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0);
         }
 
         public List<Recipe> GetAllRecipes()
         {
-            return allRecipes;
+            return new List<Recipe>(allRecipes);
         }
     }
 }
