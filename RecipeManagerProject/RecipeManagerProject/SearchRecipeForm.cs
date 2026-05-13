@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace RecipeMealPlanner
@@ -14,7 +15,7 @@ namespace RecipeMealPlanner
         public SearchRecipeForm()
         {
             this.Text = "Поиск рецепта";
-            this.Size = new System.Drawing.Size(350, 150);
+            this.Size = new Size(350, 150);
             this.StartPosition = FormStartPosition.CenterParent;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -28,32 +29,32 @@ namespace RecipeMealPlanner
             Label label = new Label
             {
                 Text = "Введите название рецепта:",
-                Location = new System.Drawing.Point(20, 20),
-                Font = new System.Drawing.Font("Arial", 10),
+                Location = new Point(20, 20),
+                Font = new Font("Arial", 10),
                 AutoSize = true
             };
 
             searchTextBox = new TextBox
             {
-                Location = new System.Drawing.Point(20, 45),
+                Location = new Point(20, 45),
                 Width = 290,
-                Font = new System.Drawing.Font("Arial", 10)
+                Font = new Font("Arial", 10)
             };
 
             okButton = new Button
             {
                 Text = "Найти",
-                Location = new System.Drawing.Point(70, 80),
-                Size = new System.Drawing.Size(90, 30),
-                BackColor = System.Drawing.Color.LightBlue
+                Location = new Point(70, 80),
+                Size = new Size(90, 30),
+                BackColor = Color.LightBlue
             };
             okButton.Click += OkButton_Click;
 
             cancelButton = new Button
             {
                 Text = "Отмена",
-                Location = new System.Drawing.Point(170, 80),
-                Size = new System.Drawing.Size(90, 30)
+                Location = new Point(170, 80),
+                Size = new Size(90, 30)
             };
             cancelButton.Click += (s, e) => this.DialogResult = DialogResult.Cancel;
 
@@ -73,8 +74,7 @@ namespace RecipeMealPlanner
             }
             else
             {
-                MessageBox.Show("Введите название для поиска.", "Ошибка",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Введите название для поиска.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
     }

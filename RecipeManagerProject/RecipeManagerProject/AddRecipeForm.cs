@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace RecipeMealPlanner
@@ -19,16 +20,17 @@ namespace RecipeMealPlanner
         private RadioButton newRadio;
         private GroupBox existingGroup;
         private GroupBox newGroup;
-        private Panel scrollPanel; // Добавляем панель с прокруткой
-
+        private Panel scrollPanel;
         private List<Recipe> allRecipes;
+
         public Recipe SelectedRecipe { get; private set; }
 
         public AddRecipeForm(List<Recipe> recipes)
         {
             allRecipes = recipes;
             this.Text = "Добавление рецепта";
-            this.Size = new System.Drawing.Size(550, 500);
+            this.Size = new Size(600, 550);
+            this.MinimumSize = new Size(500, 400);
             this.StartPosition = FormStartPosition.CenterParent;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -39,134 +41,203 @@ namespace RecipeMealPlanner
 
         private void InitializeComponent()
         {
-            // Заголовок
             Label titleLabel = new Label
             {
                 Text = "Добавьте рецепт в план",
-                Location = new System.Drawing.Point(20, 10),
-                Font = new System.Drawing.Font("Arial", 12, System.Drawing.FontStyle.Bold),
-                AutoSize = true
+                Location = new Point(20, 10),
+                Font = new Font("Arial", 12, FontStyle.Bold),
+                AutoSize = true,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left,
+                Name = "titleLabel"
             };
 
-            // Радио-кнопки выбора режима
             existingRadio = new RadioButton
             {
                 Text = "Выбрать существующий рецепт",
-                Location = new System.Drawing.Point(20, 40),
-                Checked = true
+                Location = new Point(20, 40),
+                Checked = true,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left,
+                Name = "existingRadio"
             };
             existingRadio.CheckedChanged += Radio_CheckedChanged;
 
             newRadio = new RadioButton
             {
                 Text = "Создать новый рецепт",
-                Location = new System.Drawing.Point(250, 40)
+                Location = new Point(250, 40),
+                Anchor = AnchorStyles.Top | AnchorStyles.Left,
+                Name = "newRadio"
             };
+            newRadio.CheckedChanged += Radio_CheckedChanged;
 
-            // Группа существующих рецептов
             existingGroup = new GroupBox
             {
                 Text = "Существующие рецепты",
-                Location = new System.Drawing.Point(20, 70),
-                Size = new System.Drawing.Size(490, 80)
+                Location = new Point(20, 70),
+                Size = new Size(540, 80),
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+                Name = "existingGroup"
             };
 
             existingRecipesCombo = new ComboBox
             {
-                Location = new System.Drawing.Point(10, 30),
-                Width = 460,
-                DropDownStyle = ComboBoxStyle.DropDownList
+                Location = new Point(10, 30),
+                Width = 520,
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+                Name = "existingRecipesCombo"
             };
             existingRecipesCombo.Items.AddRange(allRecipes.ToArray());
             if (existingRecipesCombo.Items.Count > 0)
                 existingRecipesCombo.SelectedIndex = 0;
             existingGroup.Controls.Add(existingRecipesCombo);
 
-            // СОЗДАЕМ ПАНЕЛЬ С ПРОКРУТКОЙ ДЛЯ НОВОГО РЕЦЕПТА
             scrollPanel = new Panel
             {
-                Location = new System.Drawing.Point(20, 70),
-                Size = new System.Drawing.Size(490, 330),
+                Location = new Point(20, 70),
+                Size = new Size(540, 380),
                 AutoScroll = true,
-                BorderStyle = BorderStyle.Fixed3D
+                BorderStyle = BorderStyle.Fixed3D,
+                Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
+                Name = "scrollPanel"
             };
 
-            // Группа нового рецепта (помещаем внутрь панели)
             newGroup = new GroupBox
             {
                 Text = "Новый рецепт",
-                Location = new System.Drawing.Point(0, 0),
-                Size = new System.Drawing.Size(460, 400), // Увеличиваем высоту
-                Enabled = false
+                Location = new Point(0, 0),
+                Size = new Size(510, 450),
+                Enabled = false,
+                Name = "newGroup"
             };
 
             int yPos = 25;
 
-            // Название
-            Label nameLabel = new Label { Text = "Название:", Location = new System.Drawing.Point(10, yPos), AutoSize = true };
-            nameTextBox = new TextBox { Location = new System.Drawing.Point(10, yPos + 20), Width = 430 };
+            Label nameLabel = new Label
+            {
+                Text = "Название:",
+                Location = new Point(10, yPos),
+                AutoSize = true,
+                Name = "nameLabel"
+            };
+
+            nameTextBox = new TextBox
+            {
+                Location = new Point(10, yPos + 20),
+                Width = 480,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+                Name = "nameTextBox"
+            };
             yPos += 60;
 
-            // Описание (многострочное)
-            Label descLabel = new Label { Text = "Описание:", Location = new System.Drawing.Point(10, yPos), AutoSize = true };
-            descriptionTextBox = new TextBox { Location = new System.Drawing.Point(10, yPos + 20), Width = 430, Height = 80, Multiline = true };
+            Label descLabel = new Label
+            {
+                Text = "Описание:",
+                Location = new Point(10, yPos),
+                AutoSize = true,
+                Name = "descLabel"
+            };
+
+            descriptionTextBox = new TextBox
+            {
+                Location = new Point(10, yPos + 20),
+                Width = 480,
+                Height = 80,
+                Multiline = true,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+                Name = "descriptionTextBox"
+            };
             yPos += 110;
 
-            // Ингредиенты
-            Label ingLabel = new Label { Text = "Ингредиенты (через запятую):", Location = new System.Drawing.Point(10, yPos), AutoSize = true };
-            ingredientsTextBox = new TextBox { Location = new System.Drawing.Point(10, yPos + 20), Width = 430 };
+            Label ingLabel = new Label
+            {
+                Text = "Ингредиенты (через запятую):",
+                Location = new Point(10, yPos),
+                AutoSize = true,
+                Name = "ingLabel"
+            };
+
+            ingredientsTextBox = new TextBox
+            {
+                Location = new Point(10, yPos + 20),
+                Width = 480,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+                Name = "ingredientsTextBox"
+            };
             yPos += 50;
 
-            // Инструкции
-            Label instrLabel = new Label { Text = "Инструкции (через запятую):", Location = new System.Drawing.Point(10, yPos), AutoSize = true };
-            instructionsTextBox = new TextBox { Location = new System.Drawing.Point(10, yPos + 20), Width = 430 };
+            Label instrLabel = new Label
+            {
+                Text = "Инструкции (через запятую):",
+                Location = new Point(10, yPos),
+                AutoSize = true,
+                Name = "instrLabel"
+            };
+
+            instructionsTextBox = new TextBox
+            {
+                Location = new Point(10, yPos + 20),
+                Width = 480,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+                Name = "instructionsTextBox"
+            };
             yPos += 50;
 
-            // Калории
-            Label calLabel = new Label { Text = "Калорийность:", Location = new System.Drawing.Point(10, yPos), AutoSize = true };
-            caloriesNumeric = new NumericUpDown { Location = new System.Drawing.Point(10, yPos + 20), Width = 100, Maximum = 5000 };
+            Label calLabel = new Label
+            {
+                Text = "Калорийность:",
+                Location = new Point(10, yPos),
+                AutoSize = true,
+                Name = "calLabel"
+            };
+
+            caloriesNumeric = new NumericUpDown
+            {
+                Location = new Point(10, yPos + 20),
+                Width = 100,
+                Maximum = 5000,
+                Name = "caloriesNumeric"
+            };
             yPos += 50;
 
-            // Добавляем все контролы в группу
             newGroup.Controls.AddRange(new Control[] {
                 nameLabel, nameTextBox, descLabel, descriptionTextBox,
                 ingLabel, ingredientsTextBox, instrLabel, instructionsTextBox,
                 calLabel, caloriesNumeric
             });
 
-            // Устанавливаем высоту группы по содержимому
             newGroup.Height = yPos + 30;
-
-            // Добавляем группу в панель с прокруткой
             scrollPanel.Controls.Add(newGroup);
 
-            // Кнопки (внизу формы, вне панели прокрутки)
             okButton = new Button
             {
                 Text = "Добавить",
-                Location = new System.Drawing.Point(150, 410),
-                Size = new System.Drawing.Size(100, 35),
-                BackColor = System.Drawing.Color.LightGreen,
-                FlatStyle = FlatStyle.Flat
+                Location = new Point(150, 460),
+                Size = new Size(100, 35),
+                BackColor = Color.LightGreen,
+                FlatStyle = FlatStyle.Flat,
+                Anchor = AnchorStyles.Bottom | AnchorStyles.Left,
+                Name = "okButton"
             };
             okButton.Click += OkButton_Click;
 
             cancelButton = new Button
             {
                 Text = "Отмена",
-                Location = new System.Drawing.Point(280, 410),
-                Size = new System.Drawing.Size(100, 35),
-                BackColor = System.Drawing.Color.LightCoral,
-                FlatStyle = FlatStyle.Flat
+                Location = new Point(280, 460),
+                Size = new Size(100, 35),
+                BackColor = Color.LightCoral,
+                FlatStyle = FlatStyle.Flat,
+                Anchor = AnchorStyles.Bottom | AnchorStyles.Left,
+                Name = "cancelButton"
             };
             cancelButton.Click += (s, e) => this.DialogResult = DialogResult.Cancel;
 
-            // Добавляем все на форму
             this.Controls.Add(titleLabel);
             this.Controls.Add(existingRadio);
             this.Controls.Add(newRadio);
             this.Controls.Add(existingGroup);
-            this.Controls.Add(scrollPanel); // Добавляем панель вместо newGroup
+            this.Controls.Add(scrollPanel);
             this.Controls.Add(okButton);
             this.Controls.Add(cancelButton);
         }
@@ -175,8 +246,6 @@ namespace RecipeMealPlanner
         {
             existingGroup.Enabled = existingRadio.Checked;
             newGroup.Enabled = newRadio.Checked;
-
-            // Показываем/скрываем соответствующие элементы
             existingGroup.Visible = existingRadio.Checked;
             scrollPanel.Visible = newRadio.Checked;
         }

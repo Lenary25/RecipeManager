@@ -5,6 +5,10 @@ using System.Windows.Forms;
 
 namespace RecipeMealPlanner
 {
+    /// <summary>
+    /// Класс управления планом меню
+    /// Хранит список всех рецептов и план на даты
+    /// </summary>
     public class MealPlan
     {
         private Dictionary<DateTime, Recipe> plan = new Dictionary<DateTime, Recipe>();
@@ -14,12 +18,13 @@ namespace RecipeMealPlanner
         public MealPlan(ListView listView)
         {
             this.listView = listView;
-            LoadSampleRecipes(); // Добавляем примеры рецептов
+            LoadSampleRecipes();
             LoadPlan();
         }
 
         private void LoadPlan()
         {
+            if (listView == null) return;
             listView.Items.Clear();
             foreach (var entry in plan)
             {
@@ -35,18 +40,19 @@ namespace RecipeMealPlanner
             {
                 var ingredients1 = new List<string> { "Макароны", "Сыр", "Масло", "Соль" };
                 var instructions1 = new List<string> { "Сварить макароны", "Натереть сыр", "Смешать с маслом" };
-                allRecipes.Add(new Recipe("Макароны с сыром", "Классическое итальянское блюдо",
-                    ingredients1, instructions1, 450));
+                allRecipes.Add(new Recipe("Макароны с сыром", "Классическое итальянское блюдо", ingredients1, instructions1, 450));
 
                 var ingredients2 = new List<string> { "Куриное филе", "Рис", "Морковь", "Лук", "Специи" };
                 var instructions2 = new List<string> { "Сварить рис", "Обжарить курицу с овощами", "Смешать" };
-                allRecipes.Add(new Recipe("Курица с рисом", "Сытный ужин",
-                    ingredients2, instructions2, 650));
+                allRecipes.Add(new Recipe("Курица с рисом", "Сытный ужин", ingredients2, instructions2, 650));
 
                 var ingredients3 = new List<string> { "Яйца", "Молоко", "Мука", "Сахар", "Яблоки" };
                 var instructions3 = new List<string> { "Взбить яйца с сахаром", "Добавить муку", "Добавить яблоки", "Испечь" };
-                allRecipes.Add(new Recipe("Яблочная шарлотка", "Вкусный десерт",
-                    ingredients3, instructions3, 350));
+                allRecipes.Add(new Recipe("Яблочная шарлотка", "Вкусный десерт", ingredients3, instructions3, 350));
+
+                var ingredients4 = new List<string> { "Яблоки", "Творог", "Мед" };
+                var instructions4 = new List<string> { "Смешать", "Запечь" };
+                allRecipes.Add(new Recipe("Запеченные яблоки", "Десерт из яблок", ingredients4, instructions4, 200));
             }
         }
 
@@ -81,15 +87,39 @@ namespace RecipeMealPlanner
             }
         }
 
-        public Recipe SearchRecipeByName(string name)
+        public List<Recipe> SearchRecipeByName(string name)
         {
-            return allRecipes.FirstOrDefault(r =>
-                r.Name.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0);
+            if (string.IsNullOrWhiteSpace(name))
+                return new List<Recipe>();
+
+            return allRecipes.Where(r =>
+                r.Name.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                r.Description.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                r.Ingredients.Any(i => i.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0)
+            ).ToList();
         }
 
         public List<Recipe> GetAllRecipes()
         {
             return allRecipes;
+        }
+
+        public Recipe GetRecipeByDate(DateTime date)
+        {
+            if (plan.ContainsKey(date))
+            {
+                return plan[date];
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// НОВЫЙ МЕТОД для варианта 26: Возвращает копию плана меню
+        /// Нужен для генерации списка покупок без нарушения инкапсуляции
+        /// </summary>
+        public Dictionary<DateTime, Recipe> GetPlan()
+        {
+            return new Dictionary<DateTime, Recipe>(plan);
         }
     }
 }
